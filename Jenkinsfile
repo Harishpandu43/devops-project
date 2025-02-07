@@ -12,6 +12,18 @@ pipeline {
     }
 
     stages {
+      stage('Install Dependencies') {
+            steps {
+                script {
+                    // Install required packages
+                    sh '''
+                        apt-get update
+                        apt-get install -y unzip curl wget
+                    '''
+                }
+            }
+        }
+        
         stage('Install AWS CLI') {
             steps {
                 script {
