@@ -17,8 +17,8 @@ pipeline {
                 script {
                     // Install required packages
                     sh '''
-                        apt-get update
-                        apt-get install -y unzip curl wget
+                        sudo apt-get update
+                        sudo apt-get install -y unzip curl wget
                     '''
                 }
             }
@@ -32,7 +32,7 @@ pipeline {
                         curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
                         unzip awscliv2.zip
                         sudo ./aws/install --update
-                        rm -rf aws awscliv2.zip
+                        sudo rm -rf aws awscliv2.zip
                         aws --version
                     '''
                     
@@ -62,7 +62,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+                        sudo curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
                         helm version
                     '''
                 }
