@@ -78,17 +78,29 @@ pipeline {
                         accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
                         
-                        sh """
-                            export AWS_SHARED_CREDENTIALS_FILE=${WORKSPACE}/.aws/credentials
+                sh """
+                    export AWS_SHARED_CREDENTIALS_FILE=${WORKSPACE}/.aws/credentials
 
-                            # ECR Login
-                            aws ecr-public get-login-password --region ${AWS_REGION} | sudo podman login --username AWS --password-stdin ${ECR_REGISTRY}
+                    # Configure podman to use vfs
+                    mkdir -p ~/.config/containers/
+                    cat << EOF > ~/.config/containers/storage.conf
+                    [storage]
+                    driver = "vfs"
+                    runroot = "/run/containers/storage"
+                    graphroot = "/var/lib/containers/storage"
+                    EOF
 
-                            # Build and push
-                            sudo buildah bud --format=docker -t ${IMAGE_NAME}:${IMAGE_TAG} .
-                            sudo podman push ${IMAGE_NAME}:${IMAGE_TAG}
-                            sudo podman rmi ${IMAGE_NAME}:${IMAGE_TAG} || true
-                        """
+                    # ECR Login
+                    aws ecr-public get-login-password --region us-east-1 | sudo podman login --username AWS --password-stdin ${ECR_REGISTRY}
+
+                    # Build and push using podman
+                    sudo podman build --storage-driver=vfs -t ${IMAGE_NAME}:${IMAGE_TAG} .
+                    sudo podman push ${IMAGE_NAME}:${IMAGE_TAG}
+                    
+                    # Clean up
+                    sudo podman rmi ${IMAGE_NAME}:${IMAGE_TAG} || true
+                    sudo podman system prune -f || true
+                """
                     }
                 }
             }
