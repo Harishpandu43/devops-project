@@ -8,7 +8,7 @@ COPY sample-app/package*.json ./
 
 # Install dependencie
 # Copy the application code from sample-app directory
-COPY sample-app/ ./
+COPY sample-app/app.js ./
 # Create a non-root user and set permissions
 USER node
 
