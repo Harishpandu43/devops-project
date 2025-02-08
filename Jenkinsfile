@@ -42,7 +42,7 @@ pipeline {
                 script {
                     // Update kubeconfig for EKS
                     sh """
-                        aws eks update-kubeconfig --region ${AWS_REGION} --name your-cluster-name
+                        aws eks update-kubeconfig --region ${AWS_REGION} --name myDevcluster
                         kubectl config current-context
                     """
                 }
