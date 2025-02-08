@@ -1,28 +1,32 @@
-FROM node:18-alpine
+FROM node:18-alpine AS builder
 
-# Add necessary system packages
-RUN apk add --no-cache dumb-init
+# Set npm to run in production mode
+ENV NODE_ENV=production
 
-# Create app directory and set permissions
+# Create a directory for the app and set ownership
 WORKDIR /app
 
-# Set ownership to node user
-RUN chown -R node:node /app
+# Copy package files first
+COPY sample-app/package*.json ./
 
-# Switch to node user for npm install
+# Copy the rest of the application
+COPY sample-app/ ./
+
+# Install dependencies
+RUN npm ci --only=production
+
+# Final stage
+FROM node:18-alpine
+
+# Create app directory
+WORKDIR /app
+
+# Copy built application from builder stage
+COPY --from=builder /app ./
+
+# Don't run as root
 USER node
-
-# Copy package files from sample-app directory with correct ownership
-COPY --chown=node:node sample-app/package*.json ./
-
-# Install dependencies as node user
-RUN npm install
-
-# Copy the application code from sample-app directory with correct ownership
-COPY --chown=node:node sample-app/ ./
 
 EXPOSE 3000
 
-# Use dumb-init as entrypoint
-ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["node", "app.js"]
