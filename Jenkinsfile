@@ -24,8 +24,8 @@ pipeline {
                 script {
                     sh """
                         # Login to ECR
-                        aws ecr-public get-login-password --region ${AWS_REGION} > /tmp/password.txt
-                        sudo STORAGE_DRIVER=vfs podman login --username AWS --password-file /tmp/password.txt ${ECR_REGISTRY}
+                        aws ecr-public get-login-password --region ${AWS_REGION}
+                        sudo STORAGE_DRIVER=vfs podman login --username AWS --password-stdin ${ECR_REGISTRY}
                         rm -f /tmp/password.txt
     
                         # Build and push image
