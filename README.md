@@ -77,15 +77,15 @@ You can now able to login to dashboard with the credentials we provided in the j
 
 ### Notes:
 
-> change your AWS ECR repo in jenkinsfile
+- change your AWS ECR repo in jenkinsfile
 
-> Install Docker, github, kubernetes and other required plugins on jenkins.
+- Install Docker, github, kubernetes and other required plugins on jenkins.
 
-> Jenkins pipeline will take agents from EKS pods. dockeragent folder has the agent image which is used to create the jenkins-agents pods in EKS.
+- Jenkins pipeline will take agents from EKS pods. dockeragent folder has the agent image which is used to create the jenkins-agents pods in EKS.
 
-> Build the job to push the docker image to ECR repo and deploy the sample nodejs app in kubernetes using helm charts.
+- Build the job to push the docker image to ECR repo and deploy the sample nodejs app in kubernetes using helm charts.
 
-> We have atomic argument added to helm install hence if anything fails it will be automatically rollback the deployment.
+- We have atomic argument added to helm install hence if anything fails it will be automatically rollback the deployment.
 
 - [If required] Please add required permissions to jenkins-role created via terraform scripts [ EKS, STS, ECR-PUBLIC]
 
