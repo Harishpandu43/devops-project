@@ -12,62 +12,6 @@ pipeline {
     }
 
     stages {
-      stage('Install Dependencies') {
-            steps {
-                script {
-                    // Install required packages
-                    sh '''
-                        sudo apt-get update
-                        sudo apt-get install -y unzip curl wget
-                    '''
-                }
-            }
-        }
-        
-        stage('Install AWS CLI') {
-            steps {
-                script {
-                    // Install AWS CLI
-                    sh '''
-                        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-                        unzip awscliv2.zip
-                        sudo ./aws/install --update
-                        sudo rm -rf aws awscliv2.zip
-                        aws --version
-                    '''
-                    
-                    // Set AWS Account ID after CLI installation
-                    env.AWS_ACCOUNT_ID = sh(
-                        script: 'aws sts get-caller-identity --query Account --output text',
-                        returnStdout: true
-                    ).trim()
-                }
-            }
-        }
-
-        stage('Install kubectl') {
-            steps {
-                script {
-                    sh '''
-                        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-                        chmod +x kubectl
-                        sudo mv kubectl /usr/local/bin/
-                        kubectl version --client
-                    '''
-                }
-            }
-        }
-
-        stage('Install Helm') {
-            steps {
-                script {
-                    sh '''
-                        sudo curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-                        helm version
-                    '''
-                }
-            }
-        }
 
         stage('Checkout') {
             steps {
@@ -78,15 +22,6 @@ pipeline {
         stage('Build & Push Docker Image') {
             steps {
                 script {
-                    // Install Docker if not present
-                    sh '''
-                        if ! command -v docker &> /dev/null; then
-                            sudo apt-get update
-                            sudo apt-get install -y docker.io
-                            sudo systemctl start docker
-                            sudo systemctl enable docker
-                        fi
-                    '''
 
                     // Login to ECR
                     sh """
