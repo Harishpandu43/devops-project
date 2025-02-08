@@ -85,6 +85,7 @@ pipeline {
                     aws ecr-public get-login-password --region us-east-1 | sudo podman login --username AWS --password-stdin ${ECR_REGISTRY}
                     
                     pwd
+                    ls
                     
                     # Build and push using podman
                     sudo podman build --storage-driver=vfs -t ${IMAGE_NAME}:${IMAGE_TAG} .
@@ -112,7 +113,7 @@ pipeline {
                             kubectl create namespace ${NAMESPACE} || true
 
                             # Deploy using Helm
-                            helm upgrade --install ${APP_NAME} ${WORKSPACE}/sampleapp/helm/sampleapp \
+                            helm upgrade --install ${APP_NAME} ${WORKSPACE}/helm/sampleapp \
                                 --namespace ${NAMESPACE} \
                                 --set image.repository=${IMAGE_NAME} \
                                 --set image.tag=${IMAGE_TAG} \
