@@ -4,7 +4,8 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copy package files first
-COPY . .
+COPY ./sample-app/package.json ./
+COPY ./sample-app/app.js ./
 
 USER root
 
