@@ -15,5 +15,16 @@ Note: Jenkins is deployed using helm charts on the EKS cluster. Get the password
 
 You can now able to login to dashboard with the credentials we provided in the jenkins/values.yaml file.
 
-change your docker repo in jenkinsfile
-update your docker creds in jenkins dashboard
+> change your AWS ECR repo in jenkinsfile
+
+> Install Docker, github, kubernetes and other required plugins.
+
+> Jenkins pipeline will take agents from EKS pods.
+
+> Please add a pipeline in Jenkins with github repository URL.
+
+> Build the job to push the docker image to ECR repo and deploy in kubernetes.
+
+> We have atomic argument added to helm install hence if anything fails it will be automatically rollback the deployment.
+
+> 
