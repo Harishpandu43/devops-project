@@ -1,20 +1,36 @@
-FROM node:18-alpine
+# Build stage
+FROM node:18-alpine AS builder
 
-# Create app directory
-WORKDIR /app
+WORKDIR /build
 
-# Copy package files from sample-app directory
+# Copy package files
 COPY sample-app/package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy the application code from sample-app directory
+# Copy application code
 COPY sample-app/ ./
 
-# Create a non-root user and set permissions
-USER node
+# Production stage
+FROM node:18-alpine
+
+# Add dumb-init
+RUN apk add --no-cache dumb-init
+
+# Create app directory
+WORKDIR /app
+
+# Create non-root user
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# Copy built application from builder stage
+COPY --from=builder --chown=appuser:appgroup /build ./
+
+# Use non-root user
+USER appuser
 
 EXPOSE 3000
 
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["node", "app.js"]
