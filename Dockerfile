@@ -3,17 +3,19 @@ FROM node:18-alpine
 # Create app directory
 WORKDIR /app
 
-# Copy package files from sample-app directory
-COPY sample-app/package*.json ./
+# Copy package files first
+COPY ./sample-app/package.json ./
 
-# Install dependencie
-# Copy the application code from sample-app directory
-COPY sample-app/app.js ./
-# Create a non-root user and set permissions
+# Copy application code
+COPY ./sample-app/app.js ./
+
+# Set ownership of the app directory
+RUN chown -R node:node /app
+
+# Switch to non-root user
 USER node
 
 EXPOSE 3000
 
-CMD ["npm", "install"]
-
-CMD ["node", "app.js"]
+# Run npm install and then start the application
+CMD ["/bin/sh", "-c", "ls -la && npm install && node app.js"]
