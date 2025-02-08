@@ -34,7 +34,7 @@ This repository contains Terraform configurations for setting up a Jenkins CI/CD
 
 #### Skipping backend configuration to my terraform-scripts as it needs to create s3 and dynamodb table for lock and versioning. We can do this a best practice to ensure secured backend files.
 
-Note: Jenkins is deployed using helm charts on the EKS cluster. Get the password from jenkins pod "cat /var/jenkins_home/secrets/initialAdminPassword" and get the loadbalancer url to connect from browser from the jenkins ingress in the eks cluster.
+Note: Jenkins is deployed using helm charts on the EKS cluster. Get the password from jenkins pod "cat /var/jenkins_home/secrets/initialAdminPassword" and get the loadbalancer url to connect from browser from the jenkins-ingress in the eks cluster.
 
 You can now able to login to dashboard with the credentials we provided in the jenkins/values.yaml file.
 
@@ -75,28 +75,31 @@ You can now able to login to dashboard with the credentials we provided in the j
     - Configure Git repository
     - Use the sample Jenkinsfile provided
 
+### Notes:
+
 > change your AWS ECR repo in jenkinsfile
 
-> Install Docker, github, kubernetes and other required plugins.
+> Install Docker, github, kubernetes and other required plugins on jenkins.
 
 > Jenkins pipeline will take agents from EKS pods.
-
-> Please add a pipeline in Jenkins with github repository URL.
 
 > Build the job to push the docker image to ECR repo and deploy in kubernetes.
 
 > We have atomic argument added to helm install hence if anything fails it will be automatically rollback the deployment.
 
-- Please add required permissions to jenkins-role created via terraform scripts [ EKS, STS, ECR-PUBLIC]
-- 
-- Create test userin IAM USER to add aws-credentials in jenkins dashboard to have access to the AWS.
-- 
+- [If required] Please add required permissions to jenkins-role created via terraform scripts [ EKS, STS, ECR-PUBLIC]
+
+- Create test user in IAM USER service in AWS to add it's accesskey and secretkey in aws-credentials in jenkins dashboard to have access to the AWS.
+
 - Update your aws-auth configmap to allow this user to perform actions.
     ```    
     mapUsers:
-        ----
         - userarn: arn:aws:iam::058264295523:user/test
           username: admin
           groups:
           - system:masters
     ```
+
+- [Optional] We can also enable github webhooks with poll scm to automate the cicd process whenever there is a commit it will automatically triggers the build.
+
+- After the deployment is successfull you will get the ingress link where you can access your sample application.
