@@ -30,8 +30,8 @@ pipeline {
 
                     // Build and push Docker image
                     sh """
-                        podman build -t ${IMAGE_NAME}:${IMAGE_TAG} .
-                        podman push ${IMAGE_NAME}:${IMAGE_TAG}
+                       podman build --storage-driver=vfs -t ${IMAGE_NAME}:${IMAGE_TAG} .
+                       podman push --storage-driver=vfs ${IMAGE_NAME}:${IMAGE_TAG}
                     """
                 }
             }
