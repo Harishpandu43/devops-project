@@ -1,36 +1,28 @@
-# Build stage
-FROM node:18-alpine AS builder
-
-WORKDIR /build
-
-# Copy package files
-COPY sample-app/package*.json ./
-
-# Install dependencies
-RUN npm install
-
-# Copy application code
-COPY sample-app/ ./
-
-# Production stage
 FROM node:18-alpine
 
-# Add dumb-init
+# Add necessary system packages
 RUN apk add --no-cache dumb-init
 
-# Create app directory
+# Create app directory and set permissions
 WORKDIR /app
 
-# Create non-root user
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+# Set ownership to node user
+RUN chown -R node:node /app
 
-# Copy built application from builder stage
-COPY --from=builder --chown=appuser:appgroup /build ./
+# Switch to node user for npm install
+USER node
 
-# Use non-root user
-USER appuser
+# Copy package files from sample-app directory with correct ownership
+COPY --chown=node:node sample-app/package*.json ./
+
+# Install dependencies as node user
+RUN npm install
+
+# Copy the application code from sample-app directory with correct ownership
+COPY --chown=node:node sample-app/ ./
 
 EXPOSE 3000
 
+# Use dumb-init as entrypoint
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["node", "app.js"]
