@@ -118,7 +118,7 @@ pipeline {
                                 --set image.repository=${IMAGE_NAME} \
                                 --set image.tag=${IMAGE_TAG} \
                                 --wait \
-                                --timeout 100s \
+                                --timeout 300s \
                                 --atomic
                         """
                     }
