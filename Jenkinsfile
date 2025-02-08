@@ -92,7 +92,7 @@ pipeline {
                             aws configure set region ${AWS_REGION}
 
                             # Update kubeconfig
-                            aws eks update-kubeconfig --region ${AWS_REGION} --name ${CLUSTER_NAME}
+                            aws eks update-kubeconfig --region ${AWS_REGION} --name myDevcluster
                             
                             # Verify connection
                             kubectl get nodes
