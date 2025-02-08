@@ -77,7 +77,7 @@ You can now able to login to dashboard with the credentials we provided in the j
 
 ### Notes:
 
-- change your AWS ECR repo in jenkinsfile
+- Change your AWS ECR regsitry in jenkinsfile and accordingly in helm/sampleapp/values.yaml.
 
 - Install Docker, github, kubernetes and other required plugins on jenkins.
 
