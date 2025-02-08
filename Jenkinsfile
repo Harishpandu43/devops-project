@@ -99,13 +99,5 @@ pipeline {
         failure {
             echo "Deployment failed! Automatic rollback will be triggered by --atomic flag"
         }
-        always {
-            // Cleanup
-            sh '''
-                podman system prune -f
-                podman rmi -f $(podman images -q) || true
-                rm -rf ~/.kube/cache
-            '''
-        }
     }
 }
