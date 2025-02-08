@@ -6,9 +6,7 @@ WORKDIR /app
 # Copy package files from sample-app directory
 COPY sample-app/package*.json ./
 
-# Install dependencies
-RUN npm install
-
+# Install dependencie
 # Copy the application code from sample-app directory
 COPY sample-app/ ./
 # Create a non-root user and set permissions
