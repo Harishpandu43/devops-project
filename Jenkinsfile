@@ -81,25 +81,13 @@ pipeline {
                 sh """
                     export AWS_SHARED_CREDENTIALS_FILE=${WORKSPACE}/.aws/credentials
 
-                    # Configure podman to use vfs
-                    mkdir -p ~/.config/containers/
-                    cat << EOF > ~/.config/containers/storage.conf
-                    [storage]
-                    driver = "vfs"
-                    runroot = "/run/containers/storage"
-                    graphroot = "/var/lib/containers/storage"
-                    EOF
-
                     # ECR Login
                     aws ecr-public get-login-password --region us-east-1 | sudo podman login --username AWS --password-stdin ${ECR_REGISTRY}
 
                     # Build and push using podman
                     sudo podman build --storage-driver=vfs -t ${IMAGE_NAME}:${IMAGE_TAG} .
-                    sudo podman push ${IMAGE_NAME}:${IMAGE_TAG}
-                    
-                    # Clean up
-                    sudo podman rmi ${IMAGE_NAME}:${IMAGE_TAG} || true
-                    sudo podman system prune -f || true
+                    sudo podman push --storage-driver=vfs ${IMAGE_NAME}:${IMAGE_TAG}
+                    sudo podman rmi --storage-driver=vfs ${IMAGE_NAME}:${IMAGE_TAG} || true
                 """
                     }
                 }
