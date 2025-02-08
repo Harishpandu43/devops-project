@@ -81,9 +81,9 @@ You can now able to login to dashboard with the credentials we provided in the j
 
 > Install Docker, github, kubernetes and other required plugins on jenkins.
 
-> Jenkins pipeline will take agents from EKS pods.
+> Jenkins pipeline will take agents from EKS pods. dockeragent folder has the agent image which is used to create the jenkins-agents pods in EKS.
 
-> Build the job to push the docker image to ECR repo and deploy in kubernetes.
+> Build the job to push the docker image to ECR repo and deploy the sample nodejs app in kubernetes using helm charts.
 
 > We have atomic argument added to helm install hence if anything fails it will be automatically rollback the deployment.
 
@@ -102,6 +102,6 @@ You can now able to login to dashboard with the credentials we provided in the j
 
 - [Optional] We can also enable github webhooks with poll scm to automate the cicd process whenever there is a commit it will automatically triggers the build.
 
-- After the deployment is successfull you will get the ingress link where you can access your sample application.
+- After the deployment is successfull you will get the ingress link where you can access your nodejs application.
 
 - Once after the infra is deployed you can make any changes to your source code and just push it to the github and trigger the build latest code will be deployed in EKS cluster.
