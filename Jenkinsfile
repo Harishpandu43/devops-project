@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent { label 'devops-tools' }
 
     environment {
         AWS_ACCOUNT_ID = ''  // Will be set after AWS CLI installation
