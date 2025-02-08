@@ -42,21 +42,22 @@ pipeline {
                             # Create directories
                             mkdir -p ${WORKSPACE}/.kube
                             mkdir -p ${WORKSPACE}/.aws
-
-                            # Configure AWS CLI
-                            cat << EOF > ${WORKSPACE}/.aws/credentials
-                            [default]
-                            aws_access_key_id = ${AWS_ACCESS_KEY_ID}
-                            aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}
-                            region = ${AWS_REGION}
-                            EOF
-
+        
+                            # Configure AWS CLI - Note the proper formatting here
+                            echo '[default]' > ${WORKSPACE}/.aws/credentials
+                            echo "aws_access_key_id = ${AWS_ACCESS_KEY_ID}" >> ${WORKSPACE}/.aws/credentials
+                            echo "aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}" >> ${WORKSPACE}/.aws/credentials
+                            echo "region = ${AWS_REGION}" >> ${WORKSPACE}/.aws/credentials
+        
+                            # Set proper permissions
+                            chmod 600 ${WORKSPACE}/.aws/credentials
+        
                             # Set AWS credentials path
                             export AWS_SHARED_CREDENTIALS_FILE=${WORKSPACE}/.aws/credentials
-
+        
                             # Verify AWS authentication
                             aws sts get-caller-identity
-
+        
                             # Configure kubectl
                             aws eks update-kubeconfig --region ${AWS_REGION} --name ${EKS_CLUSTER_NAME} --kubeconfig ${KUBE_CONFIG}
                             
@@ -68,7 +69,7 @@ pipeline {
                 }
             }
         }
-
+        
         stage('Build & Push Image') {
             steps {
                 script {
@@ -81,8 +82,7 @@ pipeline {
                             export AWS_SHARED_CREDENTIALS_FILE=${WORKSPACE}/.aws/credentials
 
                             # ECR Login
-                            aws ecr-public get-login-password --region ${AWS_REGION}
-                            sudo podman login --username AWS --password-stdin ${ECR_REGISTRY}
+                            aws ecr-public get-login-password --region ${AWS_REGION} | sudo podman login --username AWS --password-stdin ${ECR_REGISTRY}
 
                             # Build and push
                             sudo buildah bud --format=docker -t ${IMAGE_NAME}:${IMAGE_TAG} .
