@@ -5,6 +5,7 @@ This repository contains Terraform configurations for setting up a Jenkins CI/CD
 # CI/CD Process Overview
 
 ## Architecture and Workflow
+```ascii
 ┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐
 │  GitHub  │────►│  Jenkins │────►│  Docker  │────►│   EKS    │
 │   Push   │     │ Pipeline │     │Registry  │     │ Cluster  │
@@ -12,6 +13,7 @@ This repository contains Terraform configurations for setting up a Jenkins CI/CD
                       │                                   ▲
                       │                                   │
                       └───────────── Helm ───────────────┘
+```
 
 
 ### Prerequisites:
