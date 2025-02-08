@@ -25,7 +25,7 @@ pipeline {
 
                     // Login to ECR
                     sh """
-                        aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
+                        aws ecr-public get-login-password --region ${AWS_REGION} | podman login --username AWS --password-stdin ${ECR_REGISTRY}
                     """
 
                     // Build and push Docker image
