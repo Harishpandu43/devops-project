@@ -61,11 +61,11 @@ You can now able to login to dashboard with the credentials we provided in the j
     Available Jenkins Agents
     The setup includes the following agent templates:
 
-    Default Agent with:
+    Custom Agent with: [refer dockeragent/Dockerfile]
     AWS CLI
     `kubectl
     Helm
-    Docker support
+    docker & podman support
     
 ### Using the CI/CD Pipeline
     Create a New Pipeline
