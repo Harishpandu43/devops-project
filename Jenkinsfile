@@ -80,6 +80,28 @@ pipeline {
                 }
             }
         }
+        
+        stage('Configure AWS') {
+            steps {
+                script {
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', 
+                                    credentialsId: 'aws-credentials',
+                                    accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
+                                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                        sh '''
+                            mkdir -p ~/.aws
+                            echo "[default]" > ~/.aws/credentials
+                            echo "aws_access_key_id = ${AWS_ACCESS_KEY_ID}" >> ~/.aws/credentials
+                            echo "aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}" >> ~/.aws/credentials
+                            echo "region = ${AWS_REGION}" >> ~/.aws/credentials
+                            
+                            # Verify AWS credentials
+                            aws sts get-caller-identity
+                        '''
+                    }
+                }
+            }
+        }
 
         stage('Configure kubectl') {
             steps {
