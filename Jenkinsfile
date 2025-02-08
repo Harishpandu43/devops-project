@@ -127,6 +127,7 @@ pipeline {
         stage('Deploy with Helm') {
             steps {
                 script {
+                    sh "aws eks update-kubeconfig --region ${AWS_REGION} --name myDevcluster"
                     // Create namespace if it doesn't exist
                     sh "kubectl create namespace ${NAMESPACE} || true"
 
@@ -148,6 +149,8 @@ pipeline {
             steps {
                 script {
                     sh """
+                    # Update kubeconfig
+                        aws eks update-kubeconfig --region ${AWS_REGION} --name myDevcluster
                         kubectl rollout status deployment/${APP_NAME} -n ${NAMESPACE}
                         kubectl get pods -n ${NAMESPACE} -l app.kubernetes.io/name=${APP_NAME}
                     """
