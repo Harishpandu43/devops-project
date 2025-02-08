@@ -1,30 +1,17 @@
-FROM node:18-alpine AS builder
-
-# Set npm to run in production mode
-ENV NODE_ENV=production
-
-# Create a directory for the app and set ownership
-WORKDIR /app
-
-# Copy package files first
-COPY sample-app/package*.json ./
-
-# Copy the rest of the application
-COPY sample-app/ ./
-
-# Install dependencies
-RUN npm ci --only=production
-
-# Final stage
 FROM node:18-alpine
 
 # Create app directory
 WORKDIR /app
 
-# Copy built application from builder stage
-COPY --from=builder /app ./
+# Copy package files from sample-app directory
+COPY sample-app/package*.json ./
 
-# Don't run as root
+# Install dependencies
+RUN npm install
+
+# Copy the application code from sample-app directory
+COPY sample-app/ ./
+# Create a non-root user and set permissions
 USER node
 
 EXPOSE 3000
