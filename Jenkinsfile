@@ -85,7 +85,7 @@ pipeline {
                     aws ecr-public get-login-password --region us-east-1 | sudo podman login --username AWS --password-stdin ${ECR_REGISTRY}
 
                     # Build and push using podman
-                    sudo podman build --storage-driver=vfs --build-arg BUILDAH_ISOLATION=chroot -t ${IMAGE_NAME}:${IMAGE_TAG} .
+                    sudo podman build --storage-driver=vfs --build-arg BUILDAH_ISOLATION=chroot _BUILDAH_STARTED_IN_USERNS="" -t ${IMAGE_NAME}:${IMAGE_TAG} .
                     sudo podman push --storage-driver=vfs ${IMAGE_NAME}:${IMAGE_TAG}
                     sudo podman rmi --storage-driver=vfs ${IMAGE_NAME}:${IMAGE_TAG} || true
                 """
