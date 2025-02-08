@@ -6,7 +6,7 @@ pipeline {
         ECR_REGISTRY = "public.ecr.aws/q2t9c0i7"
         APP_NAME = 'sampleapp'
         IMAGE_NAME = "${ECR_REGISTRY}/${APP_NAME}"
-        IMAGE_TAG = "${BUILD_NUMBER}"
+        IMAGE_TAG = "latest"
         NAMESPACE = 'sampleapp'
         EKS_CLUSTER_NAME = 'myDevcluster'
         KUBE_CONFIG = "${WORKSPACE}/.kube/config"
@@ -79,13 +79,6 @@ pipeline {
                         
                         sh """
                             export AWS_SHARED_CREDENTIALS_FILE=${WORKSPACE}/.aws/credentials
-
-                            # Configure Podman
-                            mkdir -p ~/.config/containers
-                            cat << EOF > ~/.config/containers/storage.conf
-                            [storage]
-                            driver = "vfs"
-                            EOF
 
                             # ECR Login
                             aws ecr-public get-login-password --region ${AWS_REGION} > /tmp/ecr_password
