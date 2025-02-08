@@ -16,6 +16,17 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Harishpandu43/devops-project']])
+                sh '''
+                    pwd
+                    ls -la
+                    if [ -f Dockerfile ]; then
+                        echo "Dockerfile exists"
+                        cat Dockerfile
+                    else
+                        echo "Dockerfile not found!"
+                        exit 1
+                    fi
+                '''
             }
         }
         
