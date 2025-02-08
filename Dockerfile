@@ -1,18 +1,15 @@
+
 FROM node:18-alpine
 
-# Create app directory
 WORKDIR /app
 
 # Copy package files first
 COPY ./sample-app/package.json ./
-
-# Copy application code
 COPY ./sample-app/app.js ./
 
-# Switch to non-root user
-USER node
+USER root
 
 EXPOSE 3000
 
-# Set permissions and run the application
-CMD ["/bin/sh", "-c", "sudo chown -R node:node /app && ls -la && npm install && node app.js"]
+# Add verification steps in CMD
+CMD ["/bin/sh", "-c", "echo 'Listing /app contents:' && ls -la /app && echo 'File content:' && cat /app/app.js && chown -R node:node . && su -s /bin/sh node -c 'npm install && node app.js'"]
