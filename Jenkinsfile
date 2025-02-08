@@ -25,13 +25,13 @@ pipeline {
 
                     // Login to ECR
                     sh """
-                        aws ecr-public get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
+                        aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
                     """
 
                     // Build and push Docker image
                     sh """
-                        docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
-                        docker push ${IMAGE_NAME}:${IMAGE_TAG}
+                        podman build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+                        podman push ${IMAGE_NAME}:${IMAGE_TAG}
                     """
                 }
             }
@@ -102,7 +102,8 @@ pipeline {
         always {
             // Cleanup
             sh '''
-                docker system prune -f
+                podman system prune -f
+                podman rmi -f $(podman images -q) || true
                 rm -rf ~/.kube/cache
             '''
         }
