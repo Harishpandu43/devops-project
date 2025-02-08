@@ -18,19 +18,51 @@ pipeline {
                 checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Harishpandu43/devops-project']])
             }
         }
+        
+        stage('Setup Podman') {
+            steps {
+                sh """
+                    mkdir -p ~/.config/containers
+                    cat << EOF > ~/.config/containers/containers.conf
+                    [containers]
+                    netns="host"
+                    userns="host"
+                    ipcns="host"
+                    utsns="host"
+                    cgroupns="host"
+                    cgroups="disabled"
+                    
+                    [engine]
+                    events_logger="file"
+                    cgroup_manager="cgroupfs"
+                    
+                    [storage]
+                    driver = "vfs"
+                    graphroot = "/var/lib/containers/storage"
+                    runroot = "/run/containers/storage"
+                    EOF
+                """
+            }
+        }
+
 
         stage('Build & Push Docker Image') {
             steps {
                 script {
                     sh """
+                        # Setup Podman config directory
+                        mkdir -p ~/.config/containers
+                        
+                        # Configure Podman storage
+                        echo 'storage.driver = "vfs"' > ~/.config/containers/storage.conf
                         # Login to ECR
                         aws ecr-public get-login-password --region ${AWS_REGION}
                         sudo STORAGE_DRIVER=vfs podman login --username AWS --password-stdin ${ECR_REGISTRY}
 
                         # Build and push image
-                        sudo STORAGE_DRIVER=vfs podman build -t ${IMAGE_NAME}:${IMAGE_TAG} .
-                        sudo STORAGE_DRIVER=vfs podman push ${IMAGE_NAME}:${IMAGE_TAG}
-                        sudo STORAGE_DRIVER=vfs podman rmi ${IMAGE_NAME}:${IMAGE_TAG}
+                        sudo -E XDG_RUNTIME_DIR=/run/user/\$(id -u) podman build --storage-driver=vfs -t ${IMAGE_NAME}:${IMAGE_TAG} .
+                        sudo -E XDG_RUNTIME_DIR=/run/user/\$(id -u) podman push --storage-driver=vfs ${IMAGE_NAME}:${IMAGE_TAG}
+                        sudo -E XDG_RUNTIME_DIR=/run/user/\$(id -u) podman rmi --storage-driver=vfs ${IMAGE_NAME}:${IMAGE_TAG}
                     """
                 }
             }
