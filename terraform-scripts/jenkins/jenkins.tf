@@ -15,6 +15,16 @@ resource "helm_release" "jenkins" {
     file("${path.module}/values.yaml")
   ]
   
+   set {
+    name  = "controller.JCasC.enabled"
+    value = "true"
+  }
+
+  set {
+    name  = "controller.JCasC.defaultConfig"
+    value = "true"
+  }
+  
   timeout = 900
 
   set {
@@ -94,4 +104,45 @@ resource "kubernetes_ingress_v1" "jenkins" {
   depends_on = [
     helm_release.jenkins
   ]
+}
+
+
+resource "kubernetes_cluster_role" "jenkins" {
+  metadata {
+    name = "jenkins-admin"
+  }
+
+  rule {
+    api_groups = [""]
+    resources  = ["*"]
+    verbs      = ["*"]
+  }
+  rule {
+    api_groups = ["apps"]
+    resources  = ["*"]
+    verbs      = ["*"]
+  }
+  rule {
+    api_groups = ["networking.k8s.io"]
+    resources  = ["*"]
+    verbs      = ["*"]
+  }
+}
+
+resource "kubernetes_cluster_role_binding" "jenkins" {
+  metadata {
+    name = "jenkins-admin"
+  }
+
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = kubernetes_cluster_role.jenkins.metadata[0].name
+  }
+
+  subject {
+    kind      = "ServiceAccount"
+    name      = "jenkins"
+    namespace = kubernetes_namespace.jenkins.metadata[0].name
+  }
 }

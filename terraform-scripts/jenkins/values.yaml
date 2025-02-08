@@ -5,11 +5,81 @@ controller:
   
   resources:
     requests:
-      cpu: "200m"
-      memory: "256Mi"
+      cpu: "1000m"
+      memory: "1Gi"
     limits:
-      cpu: "400m"
-      memory: "256Mi"
+      cpu: "2000m"
+      memory: "2Gi"
+
+  # Disable JCasC
+  JCasC:
+    enabled: false
+    defaultConfig: false
+    configScripts: {}
+
+  # Basic Java options
+  javaOpts: >-
+    -Xmx2g 
+    -Xms512m 
+    -Djenkins.install.runSetupWizard=false
+
+  # Configure JCasC
+  JCasC:
+    enabled: true
+    defaultConfig: true
+    configScripts:
+      jenkins-configuration: |
+        jenkins:
+          clouds:
+            - kubernetes:
+                name: "kubernetes"
+                serverUrl: "https://kubernetes.default.svc.cluster.local"
+                namespace: "jenkins"
+                directConnection: false
+                jenkinsUrl: "http://jenkins.jenkins.svc.cluster.local:8080"
+                jenkinsTunnel: "jenkins-agent.jenkins.svc.cluster.local:50000"
+                containerCapStr: "2"
+                templates:
+                  - name: "devops-tools"
+                    label: "devops-tools"
+                    nodeUsageMode: EXCLUSIVE
+                    namespace: "jenkins"
+                    yaml: |
+                      apiVersion: v1
+                      kind: Pod
+                      spec:
+                        serviceAccountName: jenkins
+                        securityContext:
+                          fsGroup: 1000
+                        containers:
+                        - name: jnlp
+                          image: public.ecr.aws/q2t9c0i7/dockeragent:latest
+                          imagePullPolicy: Always
+                          securityContext:
+                            runAsUser: 1000
+                            runAsGroup: 1000
+                          resources:
+                            requests:
+                              cpu: "500m"
+                              memory: "1Gi"
+                            limits:
+                              cpu: "1000m"
+                              memory: "2Gi"
+                          volumeMounts:
+                            - name: workspace-volume
+                              mountPath: /home/jenkins/agent
+                        volumes:
+                          - name: workspace-volume
+                            emptyDir: {}
+
+
+  installPlugins:
+    - kubernetes:latest
+    - workflow-aggregator:latest
+    - git:latest
+    - configuration-as-code:latest
+    - docker-workflow:latest
+    - docker-plugin:latest
 
 persistence:
   enabled: false
@@ -26,28 +96,3 @@ service:
 
 agent:
   enabled: true
-  defaultsProviderTemplate: "devops-tools"
-  podTemplates:
-    devops-tools: |
-      - name: devops-tools
-        label: devops-tools
-        containers:
-        - name: tools
-          image: public.ecr.aws/aws-cli/aws-cli:latest
-          command:
-          - /bin/bash
-          - -c
-          args:
-          - |
-            yum install -y docker kubectl helm
-            cat
-          tty: true
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              cpu: "300m"
-              memory: "256Mi"
-            limits:
-              cpu: "500m"
-              memory: "256Mi"

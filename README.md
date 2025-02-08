@@ -87,4 +87,13 @@ You can now able to login to dashboard with the credentials we provided in the j
 
 > We have atomic argument added to helm install hence if anything fails it will be automatically rollback the deployment.
 
+Added permissions to jenkins-role 
+create test user to add aws-creds in jenkins file
 
+edit cm to add your user in mapuser
+mapUsers:
+----
+- userarn: arn:aws:iam::058264295523:user/test
+  username: admin
+  groups:
+  - system:masters
