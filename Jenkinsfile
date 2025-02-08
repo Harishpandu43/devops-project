@@ -81,9 +81,8 @@ pipeline {
                             export AWS_SHARED_CREDENTIALS_FILE=${WORKSPACE}/.aws/credentials
 
                             # ECR Login
-                            aws ecr-public get-login-password --region ${AWS_REGION} > /tmp/ecr_password
-                            cat /tmp/ecr_password | sudo podman login --username AWS --password-stdin ${ECR_REGISTRY}
-                            rm -f /tmp/ecr_password
+                            aws ecr-public get-login-password --region ${AWS_REGION}
+                            sudo podman login --username AWS --password-stdin ${ECR_REGISTRY}
 
                             # Build and push
                             sudo buildah bud --format=docker -t ${IMAGE_NAME}:${IMAGE_TAG} .
