@@ -125,30 +125,6 @@ pipeline {
                                 --wait \
                                 --timeout 300s \
                                 --atomic
-                                
-                            helm_upgrade_exit_status=$?
-                            echo 'Helm release failed with EXIT_CODE: '$helm_upgrade_exit_status''
-                            
-                            # Verifying the Helm upgrade/install status
-                            if [ $helm_upgrade_exit_status -eq 0 ]; then
-                              echo "Helm upgrade/install successful...."
-                            else
-                              # When Helm's release fails, it's time to set the sails for a rollback
-                              echo "Helm upgrade/install failed. Rolling back to the previous version..."
-                            
-                              # Initiating the Helm rollback
-                              helm rollback {{Release_name}} 0 --wait --timeout {{deployment_timeout_second}}
-                              if [ $? -eq 0 ]; then
-                                echo "Helm rollback completed..."
-                                echo "Action Required: Check your deployment on the K8s cluster to understand why it rolled back."
-                            
-                                # We exit with a non-zero status code to indicate pipeline failure
-                                exit 1
-                              else
-                                echo "Helm Rollback also failed ..."
-                                exit 1
-                              fi
-                            fi
                         """
                     }
                 }
