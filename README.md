@@ -1,4 +1,13 @@
-# devops-project
+# EKS Jenkins CI/CD Infrastructure
+
+This repository contains Terraform configurations for setting up a Jenkins CI/CD environment on Amazon EKS cluster.
+
+### Prerequisites:
+    - AWS CLI configured with appropriate credentials
+    - Terraform (version >= 1.0.0)
+    - kubectl installed
+    - Helm installed
+    - Access to an AWS account with necessary permissions
 
 ## Steps to run:
 
@@ -15,6 +24,44 @@ Note: Jenkins is deployed using helm charts on the EKS cluster. Get the password
 
 You can now able to login to dashboard with the credentials we provided in the jenkins/values.yaml file.
 
+### Components Deployed:
+    - EKS Cluster with managed node groups
+    - Jenkins server deployed on EKS
+    - AWS Load Balancer Controller
+    - Necessary IAM roles and policies
+    - Jenkins configuration with predefined plugins
+    
+    
+### Jenkins Configuration:
+    Accessing Jenkins
+    After deployment, get the Jenkins URL:
+
+    ```
+    kubectl get ingress -n jenkins
+    ```
+
+    
+### Default credentials:
+
+    Username: admin
+    Password: admin123 (change this in production)
+    Available Jenkins Agents
+    The setup includes the following agent templates:
+
+    Default Agent with:
+    AWS CLI
+    `kubectl
+    Helm
+    Docker support
+    
+### Using the CI/CD Pipeline
+    Create a New Pipeline
+
+    - Go to Jenkins Dashboard
+    - New Item → Pipeline
+    - Configure Git repository
+    - Use the sample Jenkinsfile provided
+
 > change your AWS ECR repo in jenkinsfile
 
 > Install Docker, github, kubernetes and other required plugins.
@@ -27,4 +74,4 @@ You can now able to login to dashboard with the credentials we provided in the j
 
 > We have atomic argument added to helm install hence if anything fails it will be automatically rollback the deployment.
 
-> 
+
