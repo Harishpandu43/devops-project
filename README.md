@@ -103,3 +103,5 @@ You can now able to login to dashboard with the credentials we provided in the j
 - [Optional] We can also enable github webhooks with poll scm to automate the cicd process whenever there is a commit it will automatically triggers the build.
 
 - After the deployment is successfull you will get the ingress link where you can access your sample application.
+
+- Once after the infra is deployed you can make any changes to your source code and just push it to the github and trigger the build latest code will be deployed in EKS cluster.
