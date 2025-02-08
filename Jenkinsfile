@@ -22,17 +22,21 @@ pipeline {
         stage('Build & Push Docker Image') {
             steps {
                 script {
+                        sh """
+                            # Configure Podman for root usage
+                            mkdir -p ~/.config/containers
+                            echo 'storage.driver = "vfs"' | sudo tee /etc/containers/storage.conf
 
-                    // Login to ECR
-                    sh """
-                        aws ecr-public get-login-password --region ${AWS_REGION} | podman login --username AWS --password-stdin ${ECR_REGISTRY}
-                    """
+                            # Login to ECR
+                            aws ecr-public get-login-password --region ${AWS_REGION} > /tmp/password.txt
+                            sudo podman login --username AWS --password-file /tmp/password.txt ${ECR_REGISTRY}
+                            rm -f /tmp/password.txt
 
-                    // Build and push Docker image
-                    sh """
-                       podman build --storage-driver=vfs -t ${IMAGE_NAME}:${IMAGE_TAG} .
-                       podman push --storage-driver=vfs ${IMAGE_NAME}:${IMAGE_TAG}
-                    """
+                            # Build and push image
+                            sudo podman build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+                            sudo podman push ${IMAGE_NAME}:${IMAGE_TAG}
+                            sudo podman rmi ${IMAGE_NAME}:${IMAGE_TAG}
+                        """
                 }
             }
         }
