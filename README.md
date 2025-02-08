@@ -89,7 +89,7 @@ You can now able to login to dashboard with the credentials we provided in the j
 
 - [If required] Please add required permissions to jenkins-role created via terraform scripts [ EKS, STS, ECR-PUBLIC]
 
-- Create test user in IAM USER service in AWS to add it's accesskey and secretkey in aws-credentials in jenkins dashboard to have access to the AWS.
+- Create test user in IAM USER service in AWS to add it's accesskey and secretkey in aws-credentials in jenkins dashboard to have access to the AWS. Make sure this IAM User have all the neccessary permissions to take action on EKS cluster.
 
 - Update your aws-auth configmap to allow this user to perform actions.
     ```    
