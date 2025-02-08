@@ -49,21 +49,23 @@ pipeline {
         stage('Build & Push Docker Image') {
             steps {
                 script {
-                    sh """
-                        # Setup Podman config directory
-                        mkdir -p ~/.config/containers
-                        
-                        # Configure Podman storage
-                        echo 'storage.driver = "vfs"' > ~/.config/containers/storage.conf
-                        # Login to ECR
-                        aws ecr-public get-login-password --region ${AWS_REGION}
-                        sudo STORAGE_DRIVER=vfs podman login --username AWS --password-stdin ${ECR_REGISTRY}
+                        sh """
+                            # Get ECR password and store it
+                            aws ecr-public get-login-password --region ${AWS_REGION} > /tmp/ecr_password
 
-                        # Build and push image
-                        sudo -E XDG_RUNTIME_DIR=/run/user/\$(id -u) podman build --storage-driver=vfs -t ${IMAGE_NAME}:${IMAGE_TAG} .
-                        sudo -E XDG_RUNTIME_DIR=/run/user/\$(id -u) podman push --storage-driver=vfs ${IMAGE_NAME}:${IMAGE_TAG}
-                        sudo -E XDG_RUNTIME_DIR=/run/user/\$(id -u) podman rmi --storage-driver=vfs ${IMAGE_NAME}:${IMAGE_TAG}
-                    """
+                            # Configure Podman
+                            mkdir -p ~/.config/containers
+                            echo 'storage.driver = "vfs"' > ~/.config/containers/storage.conf
+
+                            # Login to ECR using stored password
+                            cat /tmp/ecr_password | sudo podman login --username AWS --password-stdin ${ECR_REGISTRY}
+                            rm -f /tmp/ecr_password
+
+                            # Build and push image
+                            sudo podman build --storage-driver=vfs -t ${IMAGE_NAME}:${IMAGE_TAG} .
+                            sudo podman push --storage-driver=vfs ${IMAGE_NAME}:${IMAGE_TAG}
+                            sudo podman rmi --storage-driver=vfs ${IMAGE_NAME}:${IMAGE_TAG} || true
+                        """
                 }
             }
         }
