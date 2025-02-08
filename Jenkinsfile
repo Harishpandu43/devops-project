@@ -84,11 +84,20 @@ pipeline {
         stage('Configure kubectl') {
             steps {
                 script {
-                    // Update kubeconfig for EKS
-                    sh """
-                        aws eks update-kubeconfig --region ${AWS_REGION} --name myDevcluster
-                        kubectl config current-context
-                    """
+                    withCredentials([aws(credentialsId: 'aws-credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                        sh """
+                            # Configure AWS CLI
+                            aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}
+                            aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
+                            aws configure set region ${AWS_REGION}
+
+                            # Update kubeconfig
+                            aws eks update-kubeconfig --region ${AWS_REGION} --name ${CLUSTER_NAME}
+                            
+                            # Verify connection
+                            kubectl get nodes
+                        """
+                    }
                 }
             }
         }
