@@ -2,6 +2,18 @@
 
 This repository contains Terraform configurations for setting up a Jenkins CI/CD environment on Amazon EKS cluster.
 
+# CI/CD Process Overview
+
+## Architecture and Workflow
+┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐
+│  GitHub  │────►│  Jenkins │────►│  Docker  │────►│   EKS    │
+│   Push   │     │ Pipeline │     │Registry  │     │ Cluster  │
+└──────────┘     └──────────┘     └──────────┘     └──────────┘
+                      │                                   ▲
+                      │                                   │
+                      └───────────── Helm ───────────────┘
+
+
 ### Prerequisites:
     - AWS CLI configured with appropriate credentials
     - Terraform (version >= 1.0.0)
@@ -36,9 +48,8 @@ You can now able to login to dashboard with the credentials we provided in the j
     Accessing Jenkins
     After deployment, get the Jenkins URL:
 
-    ```
-    kubectl get ingress -n jenkins
-    ```
+    - kubectl get ingress -n jenkins
+
 
     
 ### Default credentials:
