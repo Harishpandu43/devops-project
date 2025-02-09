@@ -81,7 +81,7 @@ You can now able to login to dashboard with the credentials we provided in the j
 
 - Install Docker, github, kubernetes and other required plugins on jenkins.
 
-- Jenkins pipeline will take agents from EKS pods. dockeragent folder has the agent image which is used to create the jenkins-agents pods in EKS.
+- Jenkins pipeline will take agents from EKS pods. dockeragent folder has the agent image which is used to create the jenkins-agents pods in EKS. I am using Podman as it is a daemonless and can run containers on containers.
 
 - Build the job to push the docker image to ECR repo and deploy the sample nodejs app in kubernetes using helm charts.
 
@@ -105,3 +105,17 @@ You can now able to login to dashboard with the credentials we provided in the j
 - After the deployment is successfull you will get the ingress link where you can access your nodejs application.
 
 - Once after the infra is deployed you can make any changes to your source code and just push it to the github and trigger the build latest code will be deployed in EKS cluster.
+
+
+### [optional]Improvements:
+
+- Autoscaling can be enabled for HA
+
+- Terraform backend can be configured to store the tf statefiles to have backup, versioning and lock.
+
+- Security can be improved with restricted policies and roles.
+
+- Dockeragent can be optimized further with multistage builds and more efficient.
+
+- We can separate CI and CD pipelines to maintain version manifest.yaml of deployment code. Can help in checking the which version got deployed/running.
+
